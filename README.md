@@ -1,6 +1,6 @@
 # Hiding text in Images using Plain JavaScript
 
-Steganography is the process of concealing information in an image or any otherdigital artifact. Steganography is used to conceal messags from someone you don't want to see it. With JavaScript we can easily use a tool to assist us in hiding/encoding data inside images and decoding/viewing the hidden message. Let's explore on how we can achieve this.
+Steganography is the process of concealing information in an image or any other digital artifact. Steganography is used to conceal text from unauthorized parties. With JavaScript we can easily use steganography.js to assist us in hiding/encoding data inside images and decoding/viewing the hidden message. Let's explore on how we can achieve this.
 
 ## Github
 
@@ -13,10 +13,10 @@ To follow along through this article you are required to have:
 - Some knowledge in Bootstrap
 
 ## Introduction
-We will be using a JavaScript library by Peter Eigenschink [steganography.js](https://www.peter-eigenschink.at/projects/steganographyjs/) to build our project. You can download the library [here](https://www.peter-eigenschink.at/projects/steganographyjs/). This library offers two great functions such as decode and encode text in images and abstracts the code behind these functions.
+We will be using a JavaScript library by Peter Eigenschink [steganography.js](https://www.peter-eigenschink.at/projects/steganographyjs/) to build our project. You can download the library [here](https://www.peter-eigenschink.at/projects/steganographyjs/). This library offers two great functions to decode and encode text in images and abstracts the code behind these functions.
 
 - ```encode``` takes a message as String and a image as Image, HTMLImageElement or String representing the data-URL of the cover image. Returns the data-URL of the image with the encoded message inside.
-- ```decode``` takes a image as Image, HTMLImageElement or String representing the data-URL of the image and returns the message which was found in the image.
+- ```decode``` takes an image as Image, HTMLImageElement or String representing the data-URL of the image and returns the message which was found in the image.
 
 
 ```bash
