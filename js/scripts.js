@@ -81,7 +81,6 @@
 					textarea.value = message.innerHTML;
 					updateCapacity();
 				}
-
 			}
 		}
 
