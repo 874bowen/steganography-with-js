@@ -27,16 +27,161 @@ git clone https://github.com/874bowen/steganography-with-js.git
 
 ## Usage
 After cloning you can open the ```index.html``` file in your browser. Make sure the ```steganography.min.js``` from the library downloaded is in your js folder. Now let's examine the ```scripts.js``` file. 
+### Writing the handleFileSelect to handle uploaded image
+```javascript
+function handleFileSelect(evt) {
+    var original = document.getElementById("original"),
+        stego = document.getElementById("stego"),
+        img = document.getElementById("img"),
+        cover = document.getElementById("cover"),
+        message = document.getElementById("message");
+    if(!original || !stego) return;
+    var files = evt.target.files; 
+    for (var i = 0, f; f = files[i]; i++) {
+        if (!f.type.match('image.*')) {
+            continue;
+        }
+        var reader = new FileReader();
+        reader.onload = (function(theFile) {
+            return function(e) {
+                img.src = e.target.result;
+                img.title = escape(theFile.name);
+                stego.className = "half invisible";
+                cover.src = "";
+                message.innerHTML="";
+                message.parentNode.className="invisible";
+                updateCapacity();
+            };
+        })(f);
+        reader.readAsDataURL(f);
+    }
+}
+```
+- ```handleFileSelect(evt){...}```this function first returns the elements with their specific values required for our project and stores them in appropriate variables so they can be easily referenced in our function.  
+    ```javascript
+    var original = document.getElementById ("original"),
+        stego = document.getElementById("stego"),
+        img = document.getElementById("img"),
+        cover = document.getElementById("cover"),
+        message = document.getElementById("message");
+    ```
+- if the value in ```original``` and ```stego``` is ```null``` it should return nothing.
+    ```javascript
+    if(!original || !stego) return;
+    ```
+- To access the list of files where ```type='file'``` using the ```target.files```
+    ```javascript
+    var files = evt.target.files;
+    ```
+  We are going to loop the list of files and make sure that the files we are to process are of type image
+  ```javascript
+    if (!f.type.match('image.*')) {
+        continue;
+    }
+    ```
+  To read data from an image which is a Binary Large Object(BLOB) we need to create an object of type FileReader
+    ```javascript
+    var reader = new FileReader();
+    ```
+  ```load``` is one of the events that are triggere in process of reading the file. Whe the image loads we are going to capture the information on it and set some classes to some of our elements.
+    ```javascript
+    reader.onload = (function(theFile) {
+        return function(e) {
+            img.src = e.target.result;
+            img.title = escape(theFile.name);
+            stego.className = "half invisible";
+            cover.src = "";
+            message.innerHTML="";
+            message.parentNode.className="invisible";
+            updateCapacity();
+        };
+    })(f);
+    ```
+- When the uploaded file loads we want render the uploaded image to the left make the encoded image and the message section ```invisible``` It also checks whether the tags with id of ```img``` and ```text``` have values and computes the number of characters in the textarea field by invoking the ```updateCapacity()``` function as shown above.
+    ```javascript
+    function updateCapacity() {
+            var img = document.getElementById('img'),
+                textarea = document.getElementById('text');
+            if(img && text)
+                document.getElementById('capacity').innerHTML='('+textarea.value.length + '/' + steg.getHidingCapacity(img) +' chars)';
+        }
+    ```
+  The Image shows what the ```handleFileSelect()``` function achieves.
 
-## Upload image
-On your browser upload an image you want to hide text in also type the text you want to hide and click hide.
+    ![img.png](images/img.png)
 
-- ```handleFileSelect(evt){...}```this function takes the uploaded item makes sure that only an item of type image has been uploaded and renders it to the left on the plain image section.
-![img.png](images/img.png)
-- ```hide(){...}``` on clicking hide it takes the ```steganography.js``` provides an object called ```steg``` which we can invoke the ```encode``` method and having the text and image as arguments to the method. We then unhide the encoded image section.<br>```javascript
-cover.src = steg.encode(textarea.value, img);```<br> ![img.png](images/img1.png)
-Click the 'download' button to save the encoded image
-- ```read()``` upload the encoded image for decoding then click 'read' button this executes the read() function which decodes the encoded image using the ```decode``` function by steganography.js ,unhides the message area and fills the textarea with the secret message. Click on copy button to copy your secret message.  ![img.png](images/img2.png) 
+### Writing the hide function to encode the text
+```javascript
+function hide() {
+    var stego = document.getElementById("stego"),
+        img = document.getElementById("img"),
+        cover = document.getElementById("cover"),
+        message = document.getElementById("message"),
+        textarea = document.getElementById("text"),
+        download = document.getElementById("download");
+    if(img && textarea) {
+        cover.src = steg.encode(textarea.value, img);
+        stego.className = "half";
+        message.innerHTML="";
+        message.parentNode.className="invisible";
+        download.href=cover.src.replace("image/png", "image/octet-stream");
+    }
+}
+```
+
+
+- ```hide(){...}``` This function also returns the elements with their specific values using the ```document.getElementById``` 
+- If both the `img` and `textarea` values are not `null` we are going to **encode** our text inside the uploaded image.
+    ```javascript
+    cover.src = steg.encode(textarea.value, img);
+    ```
+ >```steganography.js``` provides an object called ```steg``` which we can invoke the ```encode``` method and having the text as ```textarea.value``` and image as ```img``` as arguments to the method.
+  
+![img.png](images/img1.png)
+    To download the encoded image using HTML5 we can add the download attribute to our download button link
+```html
+<a id="download" class="btn btn-success" download="cover.png" rel="nofollow">Download</a>
+```
+We will aslo need to change the typ of our image to an **_octet-stream_** so that when you download it with a missing extension or unknown format your system will recognize it as an octet-file(binary file).
+```javascript
+download.href=cover.src.replace("image/png", "image/octet-stream");
+```
+
+### Writing the read function to encode the text
+```javascript
+function read() {
+    var img = document.getElementById("img"),
+        cover = document.getElementById("cover"),
+        message = document.getElementById("message"),
+        textarea = document.getElementById("text");
+    if(img && textarea) {
+        message.innerHTML = steg.decode(img);
+        if(message.innerHTML !== "") {
+            message.parentNode.className="";
+            textarea.value = message.innerHTML;
+            updateCapacity();
+        }
+    }
+}
+```
+- ```read()```This function also returns the elements with their specific values using the ```document.getElementById``` used in our read function.
+
+  If the `textarea` and `img` field has values, `decode` the text inside the encoded image.
+    ```javascript
+    message.innerHTML = steg.decode(img);
+    ```
+>```decode``` function by steganography.js decodes the encoded image and retrieves the text encoded in the image.
+
+If the message field has a value copy it to the textarea field and this time let's make the div **visible** unlike we did with the two functions above.
+ ```javascript
+if(message.innerHTML !== "") {
+    message.parentNode.className="";
+    textarea.value = message.innerHTML;
+    updateCapacity();
+}
+```
+The image below shows the effect of the `read` function.
+![img.png](images/img2.png) 
 
 
 ## Deploying your application to vercel
