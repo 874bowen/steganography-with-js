@@ -83,7 +83,7 @@ function handleFileSelect(evt) {
     ```javascript
     var reader = new FileReader();
     ```
-  ```load``` is one of the events that are triggere in process of reading the file. Whe the image loads we are going to capture the information on it and set some classes to some of our elements.
+  ```load``` is one of the events triggered in process of reading the file. Whe the image loads we are going to capture the information on it and set some classes to some of our elements.
     ```javascript
     reader.onload = (function(theFile) {
         return function(e) {
