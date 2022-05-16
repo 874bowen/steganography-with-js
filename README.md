@@ -142,7 +142,7 @@ function hide() {
 ```html
 <a id="download" class="btn btn-success" download="cover.png" rel="nofollow">Download</a>
 ```
-We will aslo need to change the typ of our image to an **_octet-stream_** so that when you download it with a missing extension or unknown format your system will recognize it as an octet-file(binary file).
+We will also need to change the t of our image to an **_octet-stream_** so that when you download it with a missing extension or unknown format your system will recognize it as an octet-file(binary file).
 ```javascript
 download.href=cover.src.replace("image/png", "image/octet-stream");
 ```
